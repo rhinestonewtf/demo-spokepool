@@ -22,15 +22,11 @@ contract DeployScript is Script {
         );
 
         uint32 initDepositId = 1;
-        address l2GatewayRouter;
         address crossDomainAdmin = address(0xD1dcdD8e6Fe04c338aC3f76f7D7105bEcab74F77);
         address withdrawalRecipient = address(0xD1dcdD8e6Fe04c338aC3f76f7D7105bEcab74F77);
         ERC1967Proxy proxy = new ERC1967Proxy(
             address(spokePool),
-            abi.encodeCall(
-                Arbitrum_SpokePool.initialize,
-                (initDepositId, l2GatewayRouter, crossDomainAdmin, withdrawalRecipient)
-            )
+            abi.encodeCall(Base_SpokePool.initialize, (initDepositId, crossDomainAdmin, withdrawalRecipient))
         );
 
         console2.log("Deployed Base_SpokePool at address: ", address(proxy));
