@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import "forge-std/console2.sol";
 
 /**
  * @title SpokePool
@@ -892,12 +893,10 @@ abstract contract SpokePool is
      * @param repaymentChainId Chain of SpokePool where relayer wants to be refunded after the challenge window has
      * passed. Will receive inputAmount of the equivalent token to inputToken on the repayment chain.
      */
-    function fillV3Relay(V3RelayData calldata relayData, uint256 repaymentChainId)
-        public
-        override
-        nonReentrant
-        unpausedFills
+    function fillV3Relay(V3RelayData calldata relayData, uint256 repaymentChainId) public override // nonReentrant
+    // unpausedFills
     {
+        console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.
         if (
@@ -906,6 +905,7 @@ abstract contract SpokePool is
         ) {
             revert NotExclusiveRelayer();
         }
+        console2.log("condition");
 
         V3RelayExecutionParams memory relayExecution = V3RelayExecutionParams({
             relay: relayData,
@@ -915,8 +915,10 @@ abstract contract SpokePool is
             updatedMessage: relayData.message,
             repaymentChainId: repaymentChainId
         });
+        console2.log("params");
 
         _fillRelayV3(relayExecution, msg.sender, false);
+        console2.log("post");
     }
 
     /**
@@ -1501,6 +1503,7 @@ abstract contract SpokePool is
         address relayer,
         bool isSlowFill
     ) internal {
+        console2.log("_fillRelay");
         V3RelayData memory relayData = relayExecution.relay;
 
         if (relayData.fillDeadline < getCurrentTime()) revert ExpiredFillDeadline();
