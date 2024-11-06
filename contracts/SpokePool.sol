@@ -1514,9 +1514,8 @@ abstract contract SpokePool is
         // event to assist the Dataworker in knowing when to return funds back to the HubPool that can no longer
         // be used for a slow fill execution.
         FillType fillType = isSlowFill
-            ? FillType.SlowFill
-            : // The following is true if this is a fast fill that was sent after a slow fill request.
-            (
+            ? FillType.SlowFill // The following is true if this is a fast fill that was sent after a slow fill request.
+            : (
                 fillStatuses[relayExecution.relayHash] == uint256(FillStatus.RequestedSlowFill)
                     ? FillType.ReplacedSlowFill
                     : FillType.FastFill

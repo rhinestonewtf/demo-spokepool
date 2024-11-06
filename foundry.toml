@@ -1,6 +1,6 @@
 [profile.default]
 src = "contracts"
-out = "artifacts"
+out = "out"
 test = "test/evm/foundry"
 libs = ["node_modules", "lib"]
 remappings = [
