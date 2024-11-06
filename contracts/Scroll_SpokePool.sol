@@ -32,16 +32,19 @@ contract Scroll_SpokePool is SpokePool {
      */
     IScrollMessenger public l2ScrollMessenger;
 
-    /**************************************
+    /**
+     *
      *               EVENTS               *
-     **************************************/
-
+     *
+     */
     event SetL2GatewayRouter(address indexed newGatewayRouter, address oldGatewayRouter);
     event SetL2ScrollMessenger(address indexed newScrollMessenger, address oldScrollMessenger);
 
-    /**************************************
+    /**
+     *
      *          PUBLIC FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(
@@ -87,9 +90,11 @@ contract Scroll_SpokePool is SpokePool {
         _setL2MessageService(_l2ScrollMessenger);
     }
 
-    /**************************************
+    /**
+     *
      *         INTERNAL FUNCTIONS         *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Bridge tokens to the HubPool.

@@ -68,9 +68,11 @@ contract ZkSync_SpokePool is SpokePool {
         _;
     }
 
-    /********************************************************
+    /**
+     *
      *      ZKSYNC-SPECIFIC CROSS-CHAIN ADMIN FUNCTIONS     *
-     ********************************************************/
+     *
+     */
 
     /**
      * @notice Change L2 token bridge addresses. Callable only by admin.
@@ -80,9 +82,11 @@ contract ZkSync_SpokePool is SpokePool {
         _setZkBridge(_zkErc20Bridge);
     }
 
-    /**************************************
+    /**
+     *
      *        INTERNAL FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Wraps any ETH into WETH before executing base function. This is necessary because SpokePool receives

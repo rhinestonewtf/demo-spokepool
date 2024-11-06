@@ -64,9 +64,11 @@ abstract contract SwapAndBridgeBase is Lockable, MultiCaller {
         uint256 acrossOutputAmount
     );
 
-    /****************************************
+    /**
+     *
      *                ERRORS                *
-     ****************************************/
+     *
+     */
     error MinimumExpectedInputAmount();
     error LeftoverSrcTokens();
     error InvalidFunctionSelector();
@@ -131,7 +133,8 @@ abstract contract SwapAndBridgeBase is Lockable, MultiCaller {
      * @param swapTokenBalanceBefore Balance of swapToken before swap.
      * @param inputTokenBalanceBefore Amount of Across input token we held before swap
      * @param minExpectedInputTokenAmount Minimum amount of received acrossInputToken that we'll bridge
-     **/
+     *
+     */
     function _checkSwapOutputAndDeposit(
         uint256 swapTokenAmount,
         uint256 swapTokenBalanceBefore,

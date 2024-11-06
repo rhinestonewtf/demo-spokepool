@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
  * @notice Sends cross chain messages and tokens to contracts on a specific L2 network.
  * This interface is implemented by an adapter contract that is deployed on L1.
  */
-
 interface AdapterInterface {
     event MessageRelayed(address target, bytes message);
 

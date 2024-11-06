@@ -77,7 +77,7 @@ contract PermissionSplitterProxy is AccessControl, MultiCaller {
      *
      * This function does not return to its internal call site, it will return directly to the external caller.
      * Note: this function is a modified _delegate function here:
-     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/002a7c8812e73c282b91e14541ce9b93a6de1172/contracts/proxy/Proxy.sol#L22-L45
+     *  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/002a7c8812e73c282b91e14541ce9b93a6de1172/contracts/proxy/Proxy.sol#L22-L45
      */
     function _forward(address _target) internal {
         assembly {

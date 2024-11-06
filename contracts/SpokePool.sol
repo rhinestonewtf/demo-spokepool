@@ -99,9 +99,11 @@ abstract contract SpokePool is
     // to eliminate any chance of collision between pre and post V3 relay hashes.
     mapping(bytes32 => uint256) public fillStatuses;
 
-    /**************************************************************
+    /**
+     *
      *                CONSTANT/IMMUTABLE VARIABLES                *
-     **************************************************************/
+     *
+     */
     // Constant and immutable variables do not take up storage slots and are instead added to the contract bytecode
     // at compile time. The difference between them is that constant variables must be declared inline, meaning
     // that they cannot be changed in production without changing the contract code, while immutable variables
@@ -147,9 +149,12 @@ abstract contract SpokePool is
     // One year in seconds. If `exclusivityParameter` is set to a value less than this, then the emitted
     // exclusivityDeadline in a deposit event will be set to the current time plus this value.
     uint32 public constant MAX_EXCLUSIVITY_PERIOD_SECONDS = 31_536_000;
-    /****************************************
+    /**
+     *
      *                EVENTS                *
-     ****************************************/
+     *
+     */
+
     event SetXDomainAdmin(address indexed newAdmin);
     event SetWithdrawalRecipient(address indexed newWithdrawalRecipient);
     event EnabledDepositRoute(address indexed originToken, uint256 indexed destinationChainId, bool enabled);
@@ -231,6 +236,7 @@ abstract contract SpokePool is
      * @param payoutAdjustmentPct Adjustment to the payout amount.
      */
     /// @custom:audit FOLLOWING STRUCT TO BE DEPRECATED
+
     struct RelayExecutionInfo {
         address recipient;
         bytes message;
@@ -289,9 +295,11 @@ abstract contract SpokePool is
         _setWithdrawalRecipient(_withdrawalRecipient);
     }
 
-    /****************************************
+    /**
+     *
      *               MODIFIERS              *
-     ****************************************/
+     *
+     */
 
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to upgrade the contract. Called by
@@ -313,9 +321,11 @@ abstract contract SpokePool is
         _;
     }
 
-    /**************************************
+    /**
+     *
      *          ADMIN FUNCTIONS           *
-     **************************************/
+     *
+     */
 
     // Allows cross domain admin to upgrade UUPS proxy implementation.
     function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
@@ -407,9 +417,11 @@ abstract contract SpokePool is
         emit EmergencyDeleteRootBundle(rootBundleId);
     }
 
-    /**************************************
+    /**
+     *
      *    LEGACY DEPOSITOR FUNCTIONS      *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Called by user to bridge funds from origin to destination chain. Depositor will effectively lock
@@ -487,9 +499,11 @@ abstract contract SpokePool is
         _deposit(depositor, recipient, originToken, amount, destinationChainId, relayerFeePct, quoteTimestamp, message);
     }
 
-    /********************************************
+    /**
+     *
      *            DEPOSITOR FUNCTIONS           *
-     ********************************************/
+     *
+     */
 
     /**
      * @notice Previously, this function allowed the caller to specify the exclusivityDeadline, otherwise known as the
@@ -829,9 +843,11 @@ abstract contract SpokePool is
         );
     }
 
-    /**************************************
+    /**
+     *
      *         RELAYER FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Fulfill request to bridge cross chain by sending specified output tokens to the recipient.
@@ -1030,9 +1046,11 @@ abstract contract SpokePool is
         }
     }
 
-    /**************************************
+    /**
+     *
      *         DATA WORKER FUNCTIONS      *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Executes a slow relay leaf stored as part of a root bundle relayed by the HubPool.
@@ -1098,8 +1116,9 @@ abstract contract SpokePool is
 
         // Check that proof proves that relayerRefundLeaf is contained within the relayer refund root.
         // Note: This should revert if the relayerRefundRoot is uninitialized.
-        if (!MerkleLib.verifyRelayerRefund(rootBundle.relayerRefundRoot, relayerRefundLeaf, proof))
+        if (!MerkleLib.verifyRelayerRefund(rootBundle.relayerRefundRoot, relayerRefundLeaf, proof)) {
             revert InvalidMerkleProof();
+        }
 
         _setClaimedLeaf(rootBundleId, relayerRefundLeaf.leafId);
 
@@ -1124,9 +1143,11 @@ abstract contract SpokePool is
         );
     }
 
-    /**************************************
+    /**
+     *
      *           VIEW FUNCTIONS           *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Returns chain ID for this network.
@@ -1162,10 +1183,11 @@ abstract contract SpokePool is
         return uint256(keccak256(abi.encodePacked(msgSender, depositor, depositNonce)));
     }
 
-    /**************************************
+    /**
+     *
      *         INTERNAL FUNCTIONS         *
-     **************************************/
-
+     *
+     */
     function _depositV3(
         address depositor,
         address recipient,
@@ -1296,7 +1318,9 @@ abstract contract SpokePool is
             // Else, it is a normal ERC20. In this case pull the token from the user's wallet as per normal.
             // Note: this includes the case where the L2 user has WETH (already wrapped ETH) and wants to bridge them.
             // In this case the msg.value will be set to 0, indicating a "normal" ERC20 bridging action.
-        } else IERC20Upgradeable(originToken).safeTransferFrom(msg.sender, address(this), amount);
+        } else {
+            IERC20Upgradeable(originToken).safeTransferFrom(msg.sender, address(this), amount);
+        }
 
         emit V3FundsDeposited(
             originToken, // inputToken
@@ -1447,8 +1471,9 @@ abstract contract SpokePool is
             updatedOutputAmount: relayExecution.updatedOutputAmount
         });
 
-        if (!MerkleLib.verifyV3SlowRelayFulfillment(rootBundles[rootBundleId].slowRelayRoot, slowFill, proof))
+        if (!MerkleLib.verifyV3SlowRelayFulfillment(rootBundles[rootBundleId].slowRelayRoot, slowFill, proof)) {
             revert InvalidMerkleProof();
+        }
     }
 
     function _computeAmountPostFees(uint256 amount, int256 feesPct) private pure returns (uint256) {
@@ -1490,8 +1515,8 @@ abstract contract SpokePool is
         // be used for a slow fill execution.
         FillType fillType = isSlowFill
             ? FillType.SlowFill
-            : (
-                // The following is true if this is a fast fill that was sent after a slow fill request.
+            : // The following is true if this is a fast fill that was sent after a slow fill request.
+            (
                 fillStatuses[relayExecution.relayHash] == uint256(FillStatus.RequestedSlowFill)
                     ? FillType.ReplacedSlowFill
                     : FillType.FastFill

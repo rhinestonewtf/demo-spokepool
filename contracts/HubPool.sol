@@ -206,9 +206,11 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
         protocolFeeCaptureAddress = owner();
     }
 
-    /*************************************************
+    /**
+     *
      *                ADMIN FUNCTIONS                *
-     *************************************************/
+     *
+     */
 
     /**
      * @notice Pauses the bundle proposal and execution process. This is intended to be used during upgrades or when
@@ -229,8 +231,9 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
     function emergencyDeleteProposal() public onlyOwner nonReentrant {
         RootBundle memory _rootBundleProposal = rootBundleProposal;
         delete rootBundleProposal;
-        if (_rootBundleProposal.unclaimedPoolRebalanceLeafCount > 0)
+        if (_rootBundleProposal.unclaimedPoolRebalanceLeafCount > 0) {
             bondToken.safeTransfer(_rootBundleProposal.proposer, bondAmount);
+        }
         emit EmergencyRootBundleDeleted(
             _rootBundleProposal.poolRebalanceRoot,
             _rootBundleProposal.relayerRefundRoot,
@@ -334,7 +337,6 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
      * @param adapter Adapter used to relay messages and tokens to spoke pool. Deployed on current chain.
      * @param spokePool Recipient of relayed messages and tokens on spoke pool. Deployed on l2ChainId.
      */
-
     function setCrossChainContracts(
         uint256 l2ChainId,
         address adapter,
@@ -437,9 +439,11 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
         pooledTokens[l1Token].utilizedReserves -= haircutAmount;
     }
 
-    /*************************************************
+    /**
+     *
      *          LIQUIDITY PROVIDER FUNCTIONS         *
-     *************************************************/
+     *
+     */
 
     /**
      * @notice Deposit liquidity into this contract to earn LP fees in exchange for funding relays on SpokePools.
@@ -544,9 +548,11 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
         _sync(l1Token);
     }
 
-    /*************************************************
+    /**
+     *
      *             DATA WORKER FUNCTIONS             *
-     *************************************************/
+     *
+     */
 
     /**
      * @notice Publish a new root bundle along with all of the block numbers that the merkle roots are relevant for.
@@ -616,7 +622,6 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
      * @param l1Tokens Array of all the tokens associated with the bundleLpFees, nedSendAmounts and runningBalances.
      * @param proof Inclusion proof for this leaf in pool rebalance root in root bundle.
      */
-
     function executeRootBundle(
         uint256 chainId,
         uint256 groupIndex,
@@ -699,8 +704,9 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
 
         // Transfer the bondAmount back to the proposer, if this the last executed leaf. Only sending this once all
         // leaves have been executed acts to force the data worker to execute all bundles or they won't receive their bond.
-        if (rootBundleProposal.unclaimedPoolRebalanceLeafCount == 0)
+        if (rootBundleProposal.unclaimedPoolRebalanceLeafCount == 0) {
             bondToken.safeTransfer(rootBundleProposal.proposer, bondAmount);
+        }
 
         emit RootBundleExecuted(
             groupIndex,
@@ -847,9 +853,11 @@ contract HubPool is HubPoolInterface, Testable, Lockable, MultiCaller, Ownable {
         /* solhint-disable-line no-empty-blocks */
     }
 
-    /*************************************************
+    /**
+     *
      *              INTERNAL FUNCTIONS               *
-     *************************************************/
+     *
+     */
 
     // Called when a dispute fails due to parameter changes. This effectively resets the state and cancels the request
     // with no loss of funds, thereby enabling a new bundle to be added.

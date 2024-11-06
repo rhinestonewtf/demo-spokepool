@@ -16,9 +16,11 @@ contract AcrossMerkleDistributor is MerkleDistributor {
     // Addresses that can claim on user's behalf.
     mapping(address => bool) public whitelistedClaimers;
 
-    /****************************************
+    /**
+     *
      *                EVENTS
-     ****************************************/
+     *
+     */
     event WhitelistedClaimer(address indexed claimer, bool indexed whitelist);
     event ClaimFor(
         address indexed caller,
@@ -29,9 +31,11 @@ contract AcrossMerkleDistributor is MerkleDistributor {
         address indexed rewardToken
     );
 
-    /****************************
+    /**
+     *
      *      ADMIN FUNCTIONS
-     ****************************/
+     *
+     */
 
     /**
      * @notice Updates whitelisted claimer status.
@@ -44,9 +48,11 @@ contract AcrossMerkleDistributor is MerkleDistributor {
         emit WhitelistedClaimer(newContract, whitelist);
     }
 
-    /****************************
+    /**
+     *
      *    NON-ADMIN FUNCTIONS
-     ****************************/
+     *
+     */
 
     /**
      * @notice Batch claims to reduce gas versus individual submitting all claims. Method will fail
@@ -80,7 +86,6 @@ contract AcrossMerkleDistributor is MerkleDistributor {
      * @dev    Caller must be in whitelistedClaimers struct set to "true".
      * @param _claim leaf to claim.
      */
-
     function claimFor(Claim memory _claim) public {
         require(whitelistedClaimers[msg.sender], "unwhitelisted claimer");
         _verifyAndMarkClaimed(_claim);

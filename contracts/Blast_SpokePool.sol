@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+
 import "@eth-optimism/contracts/libraries/constants/Lib_PredeployAddresses.sol";
 
 import "./Ovm_SpokePool.sol";
@@ -63,6 +64,7 @@ contract Blast_SpokePool is Ovm_SpokePool {
     IBlast public constant BLAST_YIELD_CONTRACT = IBlast(0x4300000000000000000000000000000000000002);
 
     error InvalidClaimedAmount(address token);
+
     event YieldClaimed(address indexed recipient, address indexed token, uint256 amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -156,6 +158,8 @@ contract Blast_SpokePool is Ovm_SpokePool {
                 l1Gas,
                 ""
             );
-        } else super._bridgeTokensToHubPool(amountToReturn, l2TokenAddress);
+        } else {
+            super._bridgeTokensToHubPool(amountToReturn, l2TokenAddress);
+        }
     }
 }

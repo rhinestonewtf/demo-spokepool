@@ -254,8 +254,9 @@ contract PermissionSplitterTest is Test {
         // Assert that PermissionSplitter has no function selector collisions with HubPool.
         // @dev Solidity compilation will fail if function selectors on the same contract collide.
         // - https://ethereum.stackexchange.com/a/46188/47801
-        if (hubPoolSelectors[hubPoolFuncSelectorIdx] == proxySelectors[proxyFuncSelectorIdx])
+        if (hubPoolSelectors[hubPoolFuncSelectorIdx] == proxySelectors[proxyFuncSelectorIdx]) {
             revert FuncSelectorCollision();
+        }
     }
 
     function testCallPublicFunction() public {

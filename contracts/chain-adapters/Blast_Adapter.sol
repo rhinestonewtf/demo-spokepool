@@ -48,6 +48,7 @@ interface IL1ERC20Bridge {
 // solhint-disable-next-line contract-name-camelcase
 contract Blast_Adapter is CrossDomainEnabled, AdapterInterface, CircleCCTPAdapter {
     using SafeERC20 for IERC20;
+
     uint32 public immutable L2_GAS_LIMIT; // 200,000 is a reasonable default.
 
     WETH9Interface public immutable L1_WETH;

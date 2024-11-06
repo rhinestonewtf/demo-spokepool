@@ -31,10 +31,11 @@ contract Ethereum_SpokePool is SpokePool, OwnableUpgradeable {
         __SpokePool_init(_initialDepositId, _withdrawalRecipient, _withdrawalRecipient);
     }
 
-    /**************************************
+    /**
+     *
      *          INTERNAL FUNCTIONS           *
-     **************************************/
-
+     *
+     */
     function _bridgeTokensToHubPool(uint256 amountToReturn, address l2TokenAddress) internal override {
         IERC20Upgradeable(l2TokenAddress).safeTransfer(withdrawalRecipient, amountToReturn);
     }

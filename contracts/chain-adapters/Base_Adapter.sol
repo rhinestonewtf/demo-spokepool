@@ -28,6 +28,7 @@ import "../external/interfaces/CCTPInterfaces.sol";
 // solhint-disable-next-line contract-name-camelcase
 contract Base_Adapter is CrossDomainEnabled, AdapterInterface, CircleCCTPAdapter {
     using SafeERC20 for IERC20;
+
     uint32 public constant L2_GAS_LIMIT = 200_000;
 
     WETH9Interface public immutable L1_WETH;

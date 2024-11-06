@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
  * @notice Sends cross chain messages and tokens to contracts on a specific L3 network.
  * This interface is implemented by forwarder contracts deployed to L2s.
  */
-
 interface ForwarderInterface {
     event MessageForwarded(address indexed target, uint256 indexed chainId, bytes message);
 

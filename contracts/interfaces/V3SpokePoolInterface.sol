@@ -3,9 +3,11 @@ pragma solidity ^0.8.0;
 
 // Contains structs and functions used by SpokePool contracts to facilitate universal settlement.
 interface V3SpokePoolInterface {
-    /**************************************
+    /**
+     *
      *              ENUMS                 *
-     **************************************/
+     *
+     */
 
     // Fill status tracks on-chain state of deposit, uniquely identified by relayHash.
     enum FillStatus {
@@ -23,13 +25,15 @@ interface V3SpokePoolInterface {
         // to know when to send excess funds from the SpokePool to the HubPool because they can no longer be used
         // for a slow fill execution.
         SlowFill
-        // Slow fills are requested via requestSlowFill and executed by executeSlowRelayLeaf after a bundle containing
-        // the slow fill is validated.
     }
+    // Slow fills are requested via requestSlowFill and executed by executeSlowRelayLeaf after a bundle containing
+    // the slow fill is validated.
 
-    /**************************************
+    /**
+     *
      *              STRUCTS               *
-     **************************************/
+     *
+     */
 
     // This struct represents the data to fully specify a **unique** relay submitted on this chain.
     // This data is hashed with the chainId() and saved by the SpokePool to prevent collisions and protect against
@@ -92,10 +96,11 @@ interface V3SpokePoolInterface {
         FillType fillType;
     }
 
-    /**************************************
+    /**
+     *
      *              EVENTS                *
-     **************************************/
-
+     *
+     */
     event V3FundsDeposited(
         address inputToken,
         address outputToken,
@@ -154,10 +159,11 @@ interface V3SpokePoolInterface {
         bytes message
     );
 
-    /**************************************
+    /**
+     *
      *              FUNCTIONS             *
-     **************************************/
-
+     *
+     */
     function depositV3(
         address depositor,
         address recipient,
@@ -215,10 +221,11 @@ interface V3SpokePoolInterface {
         bytes32[] calldata proof
     ) external;
 
-    /**************************************
+    /**
+     *
      *              ERRORS                *
-     **************************************/
-
+     *
+     */
     error DisabledRoute();
     error InvalidQuoteTimestamp();
     error InvalidFillDeadline();

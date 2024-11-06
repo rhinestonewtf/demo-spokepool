@@ -74,6 +74,7 @@ interface DepositManager {
 // solhint-disable-next-line contract-name-camelcase
 contract Polygon_Adapter is AdapterInterface, CircleCCTPAdapter {
     using SafeERC20 for IERC20;
+
     IRootChainManager public immutable ROOT_CHAIN_MANAGER;
     IFxStateSender public immutable FX_STATE_SENDER;
     DepositManager public immutable DEPOSIT_MANAGER;
@@ -115,7 +116,6 @@ contract Polygon_Adapter is AdapterInterface, CircleCCTPAdapter {
      * @param target Contract on Polygon that will receive message.
      * @param message Data to send to target.
      */
-
     function relayMessage(address target, bytes calldata message) external payable override {
         FX_STATE_SENDER.sendMessageToChild(target, message);
         emit MessageRelayed(target, message);

@@ -31,9 +31,11 @@ contract Linea_SpokePool is SpokePool {
      */
     IUSDCBridge public l2UsdcBridge;
 
-    /**************************************
+    /**
+     *
      *               EVENTS               *
-     **************************************/
+     *
+     */
     event SetL2TokenBridge(address indexed newTokenBridge, address oldTokenBridge);
     event SetL2MessageService(address indexed newMessageService, address oldMessageService);
     event SetL2UsdcBridge(address indexed newUsdcBridge, address oldUsdcBridge);
@@ -86,9 +88,11 @@ contract Linea_SpokePool is SpokePool {
         return l2MessageService.minimumFeeInWei();
     }
 
-    /****************************************
+    /**
+     *
      *    LINEA-SPECIFIC ADMIN FUNCTIONS    *
-     ****************************************/
+     *
+     */
 
     /**
      * @notice Change L2 token bridge address. Callable only by admin.
@@ -114,9 +118,11 @@ contract Linea_SpokePool is SpokePool {
         _setL2UsdcBridge(_l2UsdcBridge);
     }
 
-    /**************************************
+    /**
+     *
      *        INTERNAL FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Wraps any ETH into WETH before executing base function. This is necessary because SpokePool receives

@@ -24,7 +24,6 @@
  * - Corrected SPDX-License-Identifier & reinstated GPLv3 license header.
  * - Permit transferFrom() to be overridden by marking it virtual.
  */
-
 pragma solidity ^0.8.0;
 
 contract WETH9 {

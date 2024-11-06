@@ -45,9 +45,11 @@ contract Scroll_Adapter is AdapterInterface {
      */
     IL2GasPriceOracle public immutable L2_GAS_PRICE_ORACLE;
 
-    /**************************************
+    /**
+     *
      *          PUBLIC FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Constructs new Adapter.
@@ -132,9 +134,11 @@ contract Scroll_Adapter is AdapterInterface {
         emit TokensRelayed(l1Token, l2Token, amount, to);
     }
 
-    /**************************************
+    /**
+     *
      *         INTERNAL FUNCTIONS         *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Generates the relayer fee for a message to be sent to L2.

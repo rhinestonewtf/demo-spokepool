@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+
 import "@eth-optimism/contracts/libraries/constants/Lib_PredeployAddresses.sol";
 
 import "./Ovm_SpokePool.sol";
@@ -56,11 +57,13 @@ contract Optimism_SpokePool is Ovm_SpokePool {
 
     function _bridgeTokensToHubPool(uint256 amountToReturn, address l2TokenAddress) internal virtual override {
         // Handle custom SNX bridge which doesn't conform to the standard bridge interface.
-        if (l2TokenAddress == SNX)
+        if (l2TokenAddress == SNX) {
             SynthetixBridgeToBase(SYNTHETIX_BRIDGE).withdrawTo(
                 withdrawalRecipient, // _to. Withdraw, over the bridge, to the l1 pool contract.
                 amountToReturn // _amount.
             );
-        else super._bridgeTokensToHubPool(amountToReturn, l2TokenAddress);
+        } else {
+            super._bridgeTokensToHubPool(amountToReturn, l2TokenAddress);
+        }
     }
 }

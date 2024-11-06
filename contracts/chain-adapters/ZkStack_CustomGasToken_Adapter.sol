@@ -71,6 +71,7 @@ contract ZkStack_CustomGasToken_Adapter is AdapterInterface {
     FunderInterface public immutable CUSTOM_GAS_TOKEN_FUNDER;
 
     event ZkStackMessageRelayed(bytes32 canonicalTxHash);
+
     error ETHGasTokenNotAllowed();
 
     /**

@@ -24,6 +24,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 // solhint-disable-next-line contract-name-camelcase
 contract Boba_Adapter is CrossDomainEnabled, AdapterInterface {
     using SafeERC20 for IERC20;
+
     uint32 public immutable L2_GAS_LIMIT = 2_000_000;
 
     WETH9Interface public immutable L1_WETH;

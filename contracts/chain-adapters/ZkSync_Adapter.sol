@@ -57,6 +57,7 @@ interface ZkBridgeLike {
 // A modified ZKSync_Adapter should be deployed with this address swapped in for all zkSync addresses.
 contract LimitBypassProxy is ZkSyncInterface, ZkBridgeLike {
     using SafeERC20 for IERC20;
+
     ZkSyncInterface public constant zkSync = ZkSyncInterface(0x32400084C286CF3E17e7B677ea9583e60a000324);
     ZkBridgeLike public constant zkErc20Bridge = ZkBridgeLike(0x57891966931Eb4Bb6FB81430E6cE0A03AAbDe063);
 

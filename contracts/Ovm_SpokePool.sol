@@ -36,6 +36,7 @@ contract Ovm_SpokePool is SpokePool, CircleCCTPAdapter {
     using SafeERC20 for IERC20;
     // "l1Gas" parameter used in call to bridge tokens from this contract back to L1 via IL2ERC20Bridge. Currently
     // unused by bridge but included for future compatibility.
+
     uint32 public l1Gas;
 
     // ETH is an ERC20 on OVM.
@@ -97,9 +98,11 @@ contract Ovm_SpokePool is SpokePool, CircleCCTPAdapter {
         l2Eth = _l2Eth;
     }
 
-    /*******************************************
+    /**
+     *
      *    OPTIMISM-SPECIFIC ADMIN FUNCTIONS    *
-     *******************************************/
+     *
+     */
 
     /**
      * @notice Change L1 gas limit. Callable only by admin.
@@ -125,9 +128,11 @@ contract Ovm_SpokePool is SpokePool, CircleCCTPAdapter {
         emit SetL2TokenBridge(l2Token, tokenBridge);
     }
 
-    /**************************************
+    /**
+     *
      *        INTERNAL FUNCTIONS          *
-     **************************************/
+     *
+     */
 
     /**
      * @notice Wraps any ETH into WETH before executing leaves. This is necessary because SpokePool receives

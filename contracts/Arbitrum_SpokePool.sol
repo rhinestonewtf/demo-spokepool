@@ -60,9 +60,11 @@ contract Arbitrum_SpokePool is SpokePool, CircleCCTPAdapter {
         _;
     }
 
-    /********************************************************
+    /**
+     *
      *    ARBITRUM-SPECIFIC CROSS-CHAIN ADMIN FUNCTIONS     *
-     ********************************************************/
+     *
+     */
 
     /**
      * @notice Change L2 gateway router. Callable only by admin.
@@ -81,10 +83,11 @@ contract Arbitrum_SpokePool is SpokePool, CircleCCTPAdapter {
         _whitelistToken(l2Token, l1Token);
     }
 
-    /**************************************
+    /**
+     *
      *        INTERNAL FUNCTIONS          *
-     **************************************/
-
+     *
+     */
     function _bridgeTokensToHubPool(uint256 amountToReturn, address l2TokenAddress) internal override {
         // If the l2TokenAddress is UDSC, we need to use the CCTP bridge.
         if (_isCCTPEnabled() && l2TokenAddress == address(usdcToken)) {
