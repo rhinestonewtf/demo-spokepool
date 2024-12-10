@@ -1,0 +1,84 @@
+
+[deployments]
+rpcs = [
+    "http://localhost:8545",
+    #"http://localhost:8846",
+    #"http://localhost:8847",
+    #"http://localhost:8848",
+
+    # Mainnet
+    #"https://eth.llamarpc.com",
+    #"http://localhost:8545",
+    #"https://ethereum-sepolia-rpc.publicnode.com",
+
+    # Optimism
+    #"https://optimism.llamarpc.com",
+    #"https://sepolia.optimism.io",
+
+    # Base
+    #"https://base.llamarpc.com",
+    #"https://sepolia.base.org",
+
+    # Arbitrum
+    #"https://arbitrum.llamarpc.com",
+    #"https://public.stackup.sh/api/v1/node/arbitrum-sepolia",
+]
+
+[deployments.dependencies]
+entrypoint = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
+proxy_admin = "0x0000000071727De22E5E9d8BAf0edAc6f37da032" #todo
+
+[deployments.singleton.safe7579]
+source_file_url = "https://raw.githubusercontent.com/rhinestonewtf/safe7579/main/artifacts/Safe7579/verify.json"
+abi_url = "https://raw.githubusercontent.com/rhinestonewtf/safe7579/main/artifacts/Safe7579/Safe7579.json"
+salt = "0x000000000000000000000000000000000000000065637347ca23170220e8a677"
+
+[deployments.singleton.safe7579launchpad]
+abi_url = "https://raw.githubusercontent.com/rhinestonewtf/safe7579/main/artifacts/Safe7579Launchpad.json"
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832999"
+args_sig = "(address,address)"
+args = [
+    "0x0000000071727De22E5E9d8BAf0edAc6f37da032", #entrypoint
+    "0x0000000000E23E0033C3e93D9D4eBc2FF2AB2AEF", #registry
+]
+
+#[deployments.singleton.proxyRSSchemaResolver]
+#file = "./src/artifacts/TransparentUpgradeableProxy.json"
+#salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832958"
+#args_sig ="(address,address,bytes)"
+#args = [
+#    "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+#    "0x000000333034E9f539ce08819E12c1b8Cb29084d", #attester safe
+#    "0x00"
+#]
+
+# Normal module - deployed through Registry
+[deployments.module.Counter]
+file = "./artifacts/Counter/Counter.json"
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832995"
+args_sig = "(address)"
+args = [
+    "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
+]
+
+# Initializable module - deployed through default init factory
+[deployments.module.DefaultCounterWithInit]
+file = "./artifacts/Counter/Counter.json"
+args_sig = "(address)"
+args = ["0x8a310b9085faF5d9464D84C3d9a7BE3b28c94531"]
+salt = "0x0000000000000000000000000000000000000000e7068a3f93a9e201b1733214"
+init_call = "0x19ab453c0000000000000000000000008a310b9085faF5d9464D84C3d9a7BE3b28c94531"
+
+# Initializable module - deployed through custom init factory
+[deployments.module.CounterWithInit]
+file = "./artifacts/Counter/Counter.json"
+args_sig = "(address)"
+args = ["0x8a310b9085faF5d9464D84C3d9a7BE3b28c94531"]
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201b1733214"
+init_call = "0x19ab453c0000000000000000000000008a310b9085faF5d9464D84C3d9a7BE3b28c94531"
+init_factory = "0x94423Ae8A44DfBdCFbb152a541f5CdB1400Dbf26"
+
+[deployments.module.spending_policy]
+salt = "0x0000000000000000000000000000000000000000d74897ffdea60f02e53876f9"
+#file = "./artifacts/SudoPolicy/SudoPolicy.json"
+gh_artifacts_url = "https://api.github.com/repos/erc7579/smartsessions/actions/artifacts/2171696447/zip"
