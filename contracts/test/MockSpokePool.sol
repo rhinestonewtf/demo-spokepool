@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../SpokePool.sol";
 import "./interfaces/MockV2SpokePoolInterface.sol";
 import "./V2MerkleLib.sol";
@@ -10,7 +9,7 @@ import "./V2MerkleLib.sol";
  * @title MockSpokePool
  * @notice Implements abstract contract for testing.
  */
-contract MockSpokePool is SpokePool, MockV2SpokePoolInterface, OwnableUpgradeable {
+contract MockSpokePool is SpokePool, MockV2SpokePoolInterface {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     uint256 private chainId_;
@@ -30,12 +29,7 @@ contract MockSpokePool is SpokePool, MockV2SpokePoolInterface, OwnableUpgradeabl
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address _wrappedNativeTokenAddress) SpokePool(_wrappedNativeTokenAddress, 1 hours, 9 hours) {} // solhint-disable-line no-empty-blocks
 
-    function initialize(
-        uint32 _initialDepositId,
-        address _crossDomainAdmin,
-        address _hubPool
-    ) public initializer {
-        __Ownable_init();
+    function initialize(uint32 _initialDepositId, address _crossDomainAdmin, address _hubPool) public initializer {
         __SpokePool_init(_initialDepositId, _crossDomainAdmin, _hubPool);
         currentTime = block.timestamp; // solhint-disable-line not-rely-on-time
     }

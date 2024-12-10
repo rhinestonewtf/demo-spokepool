@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import "forge-std/console2.sol";
 
 /**
@@ -36,7 +37,8 @@ abstract contract SpokePool is
     ReentrancyGuardUpgradeable,
     MultiCallerUpgradeable,
     EIP712CrossChainUpgradeable,
-    IDestinationSettler
+    IDestinationSettler,
+    Ownable
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressLibUpgradeable for address;
@@ -268,11 +270,21 @@ abstract contract SpokePool is
         address _wrappedNativeTokenAddress,
         uint32 _depositQuoteTimeBuffer,
         uint32 _fillDeadlineBuffer
-    ) {
+    ) Ownable() {
         wrappedNativeToken = WETH9Interface(_wrappedNativeTokenAddress);
         depositQuoteTimeBuffer = _depositQuoteTimeBuffer;
         fillDeadlineBuffer = _fillDeadlineBuffer;
         _disableInitializers();
+    }
+
+    /// @notice This is only for testing to repay solvers manually. This contract is not supposed to be used in prod
+    /// after the Across PR goes live.
+    function adminRemoveFunds(uint256 amount, address token, address recipient) public onlyOwner {
+        IERC20Upgradeable(token).safeTransfer(recipient, amount);
+
+        if (token == address(0)) {
+            payable(recipient).transfer(amount);
+        }
     }
 
     /**
@@ -380,7 +392,7 @@ abstract contract SpokePool is
         address originToken,
         uint256 destinationChainId,
         bool enabled
-    ) public override onlyAdmin nonReentrant {
+    ) public override onlyOwner nonReentrant {
         enabledDepositRoutes[originToken][destinationChainId] = enabled;
         emit EnabledDepositRoute(originToken, destinationChainId, enabled);
     }
@@ -895,8 +907,9 @@ abstract contract SpokePool is
      */
     function fillV3Relay(
         V3RelayData calldata relayData,
-        uint256 repaymentChainId // nonReentrant // unpausedFills
-    ) public override {
+        uint256 repaymentChainId // nonReentrant
+    ) public override // unpausedFills
+    {
         console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.
@@ -1031,11 +1044,7 @@ abstract contract SpokePool is
      * @param originData Data emitted on the origin to parameterize the fill
      * @param fillerData Data provided by the filler to inform the fill or express their preferences
      */
-    function fill(
-        bytes32 orderId,
-        bytes calldata originData,
-        bytes calldata fillerData
-    ) external {
+    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external {
         if (keccak256(originData) != orderId) {
             revert WrongERC7683OrderId();
         }
@@ -1499,11 +1508,7 @@ abstract contract SpokePool is
 
     // @param relayer: relayer who is actually credited as filling this deposit. Can be different from
     // exclusiveRelayer if passed exclusivityDeadline or if slow fill.
-    function _fillRelayV3(
-        V3RelayExecutionParams memory relayExecution,
-        address relayer,
-        bool isSlowFill
-    ) internal {
+    function _fillRelayV3(V3RelayExecutionParams memory relayExecution, address relayer, bool isSlowFill) internal {
         console2.log("_fillRelay");
         V3RelayData memory relayData = relayExecution.relay;
 

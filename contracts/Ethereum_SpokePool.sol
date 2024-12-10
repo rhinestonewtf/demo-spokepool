@@ -2,13 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "./SpokePool.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /**
  * @notice Ethereum L1 specific SpokePool. Used on Ethereum L1 to facilitate L2->L1 transfers.
  * @custom:security-contact bugs@across.to
  */
-contract Ethereum_SpokePool is SpokePool, OwnableUpgradeable {
+contract Ethereum_SpokePool is SpokePool {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -27,7 +26,6 @@ contract Ethereum_SpokePool is SpokePool, OwnableUpgradeable {
      * likely be the hub pool.
      */
     function initialize(uint32 _initialDepositId, address _withdrawalRecipient) public initializer {
-        __Ownable_init();
         __SpokePool_init(_initialDepositId, _withdrawalRecipient, _withdrawalRecipient);
     }
 
