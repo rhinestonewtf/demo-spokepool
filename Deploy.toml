@@ -1,0 +1,56 @@
+
+[deployments]
+rpcs = [
+    #"http://localhost:8545",
+    #"http://localhost:8846",
+    #"http://localhost:8847",
+    #"http://localhost:8848",
+
+    # Mainnet
+    #"https://eth.llamarpc.com",
+    #"http://localhost:8545",
+    #"https://ethereum-sepolia-rpc.publicnode.com",
+
+    # Optimism
+    #"https://optimism.llamarpc.com",
+    #"https://sepolia.optimism.io",
+
+    # Base
+    #"https://base.llamarpc.com",
+    #"https://sepolia.base.org",
+
+    # Arbitrum
+    #"https://arbitrum.llamarpc.com",
+    #"https://public.stackup.sh/api/v1/node/arbitrum-sepolia",
+]
+
+
+[deployments.dependencies]
+entrypoint = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
+proxy_admin = "0x0000000071727De22E5E9d8BAf0edAc6f37da032" #todo
+
+
+
+[deployments.singleton.weth]
+file = "./artifacts/WETH/TestWETH.json"
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832998"
+
+[deployments.singleton.spokepool]
+file = "./artifacts/Ethereum_SpokePool/Ethereum_SpokePool.json"
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832999"
+args_sig = "(address,uint32,uint32)"
+args = [
+"0x47D41c334497f06ab42e60C4036c506D924DDc9c",
+"604800",
+"604800"
+]
+
+[deployments.singleton.spokepoolProxy]
+file = "./artifacts/proxy/ERC1967Proxy.json"
+salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832999"
+args_sig = "(address,bytes)"
+args = [
+"0x419CAfa9f4D1b7b844F42044bB577714b470eEEc",
+"8624c35c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d1dcdd8e6fe04c338ac3f76f7d7105becab74f77"
+]
+

@@ -895,9 +895,8 @@ abstract contract SpokePool is
      */
     function fillV3Relay(
         V3RelayData calldata relayData,
-        uint256 repaymentChainId // nonReentrant
-    ) public override // unpausedFills
-    {
+        uint256 repaymentChainId // nonReentrant // unpausedFills
+    ) public override {
         console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.

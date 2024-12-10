@@ -47,6 +47,7 @@
     "@ethersproject/bignumber": "5.7.0",
     "@openzeppelin/contracts": "4.9.6",
     "@openzeppelin/contracts-upgradeable": "4.9.6",
+    "solady": "github:vectorized/solady",
     "@scroll-tech/contracts": "^0.1.0",
     "@solana-developers/helpers": "^2.4.0",
     "@solana/spl-token": "^0.4.6",
