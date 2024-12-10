@@ -37,7 +37,8 @@ abstract contract SpokePool is
     ReentrancyGuardUpgradeable,
     MultiCallerUpgradeable,
     EIP712CrossChainUpgradeable,
-    IDestinationSettler
+    IDestinationSettler,
+    Ownable
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressLibUpgradeable for address;
@@ -274,6 +275,16 @@ abstract contract SpokePool is
         depositQuoteTimeBuffer = _depositQuoteTimeBuffer;
         fillDeadlineBuffer = _fillDeadlineBuffer;
         _disableInitializers();
+    }
+
+    /// @notice This is only for testing to repay solvers manually. This contract is not supposed to be used in prod
+    /// after the Across PR goes live.
+    function adminRemoveFunds(uint256 amount, address token, address recipient) public onlyOwner {
+        IERC20Upgradeable(token).safeTransfer(recipient, amount);
+
+        if (token == address(0)) {
+            payable(recipient).transfer(amount);
+        }
     }
 
     /**
@@ -897,8 +908,8 @@ abstract contract SpokePool is
     function fillV3Relay(
         V3RelayData calldata relayData,
         uint256 repaymentChainId // nonReentrant
-        // unpausedFills
-    ) public override {
+    ) public override // unpausedFills
+    {
         console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.
