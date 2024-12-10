@@ -24,6 +24,12 @@ contract DeployScript is Script {
             abi.encodeCall(Ethereum_SpokePool.initialize, (initDepositId, withdrawalRecipient))
         );
         console2.logBytes(abi.encodeCall(Ethereum_SpokePool.initialize, (initDepositId, withdrawalRecipient)));
+        console2.logBytes(
+            abi.encode(
+                address(0x419CAfa9f4D1b7b844F42044bB577714b470eEEc),
+                abi.encodeCall(Ethereum_SpokePool.initialize, (initDepositId, withdrawalRecipient))
+            )
+        );
         console2.log("Deployed Sepolia_SpokePool at address: ", address(proxy));
         console2.log("Deployed Sepolia_SpokePool impl at address: ", address(spokePool));
     }

@@ -11,6 +11,8 @@ rpcs = [
     #"http://localhost:8545",
     #"https://ethereum-sepolia-rpc.publicnode.com",
 
+#https://opt-sepolia.g.alchemy.com/v2/
+
     # Optimism
     #"https://optimism.llamarpc.com",
     #"https://sepolia.optimism.io",
@@ -31,11 +33,11 @@ proxy_admin = "0x0000000071727De22E5E9d8BAf0edAc6f37da032" #todo
 
 
 
-[deployments.singleton.weth]
+[deployments.singleton.aweth]
 file = "./artifacts/WETH/TestWETH.json"
 salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832998"
 
-[deployments.singleton.spokepool]
+[deployments.singleton.bspokepool]
 file = "./artifacts/Ethereum_SpokePool/Ethereum_SpokePool.json"
 salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832999"
 args_sig = "(address,uint32,uint32)"
@@ -45,12 +47,12 @@ args = [
 "604800"
 ]
 
-[deployments.singleton.spokepoolProxy]
+[deployments.singleton.cspokepoolProxy]
 file = "./artifacts/proxy/ERC1967Proxy.json"
 salt = "0x0000000000000000000000000000000000000000e5068a3f93a9e201a1832999"
 args_sig = "(address,bytes)"
 args = [
 "0x419CAfa9f4D1b7b844F42044bB577714b470eEEc",
-"8624c35c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d1dcdd8e6fe04c338ac3f76f7d7105becab74f77"
+"0x8624c35c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d1dcdd8e6fe04c338ac3f76f7d7105becab74f77"
 ]
 
