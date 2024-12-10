@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import "forge-std/console2.sol";
 
 /**
@@ -268,7 +269,7 @@ abstract contract SpokePool is
         address _wrappedNativeTokenAddress,
         uint32 _depositQuoteTimeBuffer,
         uint32 _fillDeadlineBuffer
-    ) {
+    ) Ownable() {
         wrappedNativeToken = WETH9Interface(_wrappedNativeTokenAddress);
         depositQuoteTimeBuffer = _depositQuoteTimeBuffer;
         fillDeadlineBuffer = _fillDeadlineBuffer;
@@ -380,7 +381,7 @@ abstract contract SpokePool is
         address originToken,
         uint256 destinationChainId,
         bool enabled
-    ) public override onlyAdmin nonReentrant {
+    ) public override onlyOwner nonReentrant {
         enabledDepositRoutes[originToken][destinationChainId] = enabled;
         emit EnabledDepositRoute(originToken, destinationChainId, enabled);
     }
@@ -895,7 +896,8 @@ abstract contract SpokePool is
      */
     function fillV3Relay(
         V3RelayData calldata relayData,
-        uint256 repaymentChainId // nonReentrant // unpausedFills
+        uint256 repaymentChainId // nonReentrant
+        // unpausedFills
     ) public override {
         console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
@@ -1031,11 +1033,7 @@ abstract contract SpokePool is
      * @param originData Data emitted on the origin to parameterize the fill
      * @param fillerData Data provided by the filler to inform the fill or express their preferences
      */
-    function fill(
-        bytes32 orderId,
-        bytes calldata originData,
-        bytes calldata fillerData
-    ) external {
+    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external {
         if (keccak256(originData) != orderId) {
             revert WrongERC7683OrderId();
         }
@@ -1499,11 +1497,7 @@ abstract contract SpokePool is
 
     // @param relayer: relayer who is actually credited as filling this deposit. Can be different from
     // exclusiveRelayer if passed exclusivityDeadline or if slow fill.
-    function _fillRelayV3(
-        V3RelayExecutionParams memory relayExecution,
-        address relayer,
-        bool isSlowFill
-    ) internal {
+    function _fillRelayV3(V3RelayExecutionParams memory relayExecution, address relayer, bool isSlowFill) internal {
         console2.log("_fillRelay");
         V3RelayData memory relayData = relayExecution.relay;
 
