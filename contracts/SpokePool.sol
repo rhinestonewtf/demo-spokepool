@@ -17,7 +17,6 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "forge-std/console2.sol";
 
 /**
@@ -37,8 +36,7 @@ abstract contract SpokePool is
     ReentrancyGuardUpgradeable,
     MultiCallerUpgradeable,
     EIP712CrossChainUpgradeable,
-    IDestinationSettler,
-    Ownable
+    IDestinationSettler
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressLibUpgradeable for address;
@@ -130,9 +128,10 @@ abstract contract SpokePool is
 
     uint256 public constant MAX_TRANSFER_SIZE = 1e36;
 
-    bytes32 public constant UPDATE_V3_DEPOSIT_DETAILS_HASH = keccak256(
-        "UpdateDepositDetails(uint256 depositId,uint256 originChainId,uint256 updatedOutputAmount,address updatedRecipient,bytes updatedMessage)"
-    );
+    bytes32 public constant UPDATE_V3_DEPOSIT_DETAILS_HASH =
+        keccak256(
+            "UpdateDepositDetails(uint256 depositId,uint256 originChainId,uint256 updatedOutputAmount,address updatedRecipient,bytes updatedMessage)"
+        );
 
     // Default chain Id used to signify that no repayment is requested, for example when executing a slow fill.
     uint256 public constant EMPTY_REPAYMENT_CHAIN_ID = 0;
@@ -161,7 +160,9 @@ abstract contract SpokePool is
     event SetWithdrawalRecipient(address indexed newWithdrawalRecipient);
     event EnabledDepositRoute(address indexed originToken, uint256 indexed destinationChainId, bool enabled);
     event RelayedRootBundle(
-        uint32 indexed rootBundleId, bytes32 indexed relayerRefundRoot, bytes32 indexed slowRelayRoot
+        uint32 indexed rootBundleId,
+        bytes32 indexed relayerRefundRoot,
+        bytes32 indexed slowRelayRoot
     );
     event ExecutedRelayerRefundRoot(
         uint256 amountToReturn,
@@ -263,23 +264,15 @@ abstract contract SpokePool is
      * into the future from the block time of the deposit.
      */
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(address _wrappedNativeTokenAddress, uint32 _depositQuoteTimeBuffer, uint32 _fillDeadlineBuffer)
-        Ownable()
-    {
+    constructor(
+        address _wrappedNativeTokenAddress,
+        uint32 _depositQuoteTimeBuffer,
+        uint32 _fillDeadlineBuffer
+    ) {
         wrappedNativeToken = WETH9Interface(_wrappedNativeTokenAddress);
         depositQuoteTimeBuffer = _depositQuoteTimeBuffer;
         fillDeadlineBuffer = _fillDeadlineBuffer;
         _disableInitializers();
-    }
-
-    /// @notice This is only for testing to repay solvers manually. This contract is not supposed to be used in prod
-    /// after the Across PR goes live.
-    function adminRemoveFunds(uint256 amount, address token, address recipient) public onlyOwner {
-        IERC20Upgradeable(token).safeTransfer(recipient, amount);
-
-        if (token == address(0)) {
-            payable(recipient).transfer(amount);
-        }
     }
 
     /**
@@ -290,10 +283,11 @@ abstract contract SpokePool is
      * @param _withdrawalRecipient Address which receives token withdrawals. Can be changed by admin. For Spoke Pools on L2, this will
      * likely be the hub pool.
      */
-    function __SpokePool_init(uint32 _initialDepositId, address _crossDomainAdmin, address _withdrawalRecipient)
-        public
-        onlyInitializing
-    {
+    function __SpokePool_init(
+        uint32 _initialDepositId,
+        address _crossDomainAdmin,
+        address _withdrawalRecipient
+    ) public onlyInitializing {
         numberOfDeposits = _initialDepositId;
         __EIP712_init("ACROSS-V2", "1.0.0");
         __UUPSUpgradeable_init();
@@ -382,12 +376,11 @@ abstract contract SpokePool is
      * @param destinationChainId Chain ID for where depositor wants to receive funds.
      * @param enabled True to enable deposits, False otherwise.
      */
-    function setEnableRoute(address originToken, uint256 destinationChainId, bool enabled)
-        public
-        override
-        onlyOwner
-        nonReentrant
-    {
+    function setEnableRoute(
+        address originToken,
+        uint256 destinationChainId,
+        bool enabled
+    ) public override onlyAdmin nonReentrant {
         enabledDepositRoutes[originToken][destinationChainId] = enabled;
         emit EnabledDepositRoute(originToken, destinationChainId, enabled);
     }
@@ -461,7 +454,16 @@ abstract contract SpokePool is
         bytes memory message,
         uint256 // maxCount. Deprecated.
     ) public payable override nonReentrant unpausedDeposits {
-        _deposit(msg.sender, recipient, originToken, amount, destinationChainId, relayerFeePct, quoteTimestamp, message);
+        _deposit(
+            msg.sender,
+            recipient,
+            originToken,
+            amount,
+            destinationChainId,
+            relayerFeePct,
+            quoteTimestamp,
+            message
+        );
     }
 
     /**
@@ -821,13 +823,24 @@ abstract contract SpokePool is
         bytes calldata depositorSignature
     ) public override nonReentrant {
         _verifyUpdateV3DepositMessage(
-            depositor, depositId, chainId(), updatedOutputAmount, updatedRecipient, updatedMessage, depositorSignature
+            depositor,
+            depositId,
+            chainId(),
+            updatedOutputAmount,
+            updatedRecipient,
+            updatedMessage,
+            depositorSignature
         );
 
         // Assuming the above checks passed, a relayer can take the signature and the updated deposit information
         // from the following event to submit a fill with updated relay data.
         emit RequestedSpeedUpV3Deposit(
-            updatedOutputAmount, depositId, depositor, updatedRecipient, updatedMessage, depositorSignature
+            updatedOutputAmount,
+            depositId,
+            depositor,
+            updatedRecipient,
+            updatedMessage,
+            depositorSignature
         );
     }
 
@@ -880,17 +893,16 @@ abstract contract SpokePool is
      * @param repaymentChainId Chain of SpokePool where relayer wants to be refunded after the challenge window has
      * passed. Will receive inputAmount of the equivalent token to inputToken on the repayment chain.
      */
-    function fillV3Relay(V3RelayData calldata relayData, uint256 repaymentChainId)
-        public
-        override // nonReentrant
-    // unpausedFills
-    {
+    function fillV3Relay(
+        V3RelayData calldata relayData,
+        uint256 repaymentChainId // nonReentrant // unpausedFills
+    ) public override {
         console2.log("start");
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.
         if (
-            _fillIsExclusive(relayData.exclusivityDeadline, uint32(getCurrentTime()))
-                && relayData.exclusiveRelayer != msg.sender
+            _fillIsExclusive(relayData.exclusivityDeadline, uint32(getCurrentTime())) &&
+            relayData.exclusiveRelayer != msg.sender
         ) {
             revert NotExclusiveRelayer();
         }
@@ -938,8 +950,8 @@ abstract contract SpokePool is
         // Exclusivity deadline is inclusive and is the latest timestamp that the exclusive relayer has sole right
         // to fill the relay.
         if (
-            _fillIsExclusive(relayData.exclusivityDeadline, uint32(getCurrentTime()))
-                && relayData.exclusiveRelayer != msg.sender
+            _fillIsExclusive(relayData.exclusivityDeadline, uint32(getCurrentTime())) &&
+            relayData.exclusiveRelayer != msg.sender
         ) {
             revert NotExclusiveRelayer();
         }
@@ -1019,7 +1031,11 @@ abstract contract SpokePool is
      * @param originData Data emitted on the origin to parameterize the fill
      * @param fillerData Data provided by the filler to inform the fill or express their preferences
      */
-    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external {
+    function fill(
+        bytes32 orderId,
+        bytes calldata originData,
+        bytes calldata fillerData
+    ) external {
         if (keccak256(originData) != orderId) {
             revert WrongERC7683OrderId();
         }
@@ -1056,11 +1072,11 @@ abstract contract SpokePool is
      * @param rootBundleId Unique ID of root bundle containing slow relay root that this leaf is contained in.
      * @param proof Inclusion proof for this leaf in slow relay root in root bundle.
      */
-    function executeV3SlowRelayLeaf(V3SlowFill calldata slowFillLeaf, uint32 rootBundleId, bytes32[] calldata proof)
-        public
-        override
-        nonReentrant
-    {
+    function executeV3SlowRelayLeaf(
+        V3SlowFill calldata slowFillLeaf,
+        uint32 rootBundleId,
+        bytes32[] calldata proof
+    ) public override nonReentrant {
         V3RelayData memory relayData = slowFillLeaf.relayData;
 
         _preExecuteLeafHook(relayData.outputToken);
@@ -1162,11 +1178,11 @@ abstract contract SpokePool is
      * @param depositNonce The nonce used as input to produce the deposit ID.
      * @return The deposit ID for the unsafe deposit.
      */
-    function getUnsafeDepositId(address msgSender, address depositor, uint256 depositNonce)
-        public
-        pure
-        returns (uint256)
-    {
+    function getUnsafeDepositId(
+        address msgSender,
+        address depositor,
+        uint256 depositNonce
+    ) public pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(msgSender, depositor, depositNonce)));
     }
 
@@ -1241,7 +1257,7 @@ abstract contract SpokePool is
         // wrapped.
         if (inputToken == address(wrappedNativeToken) && msg.value > 0) {
             if (msg.value != inputAmount) revert MsgValueDoesNotMatchInputAmount();
-            wrappedNativeToken.deposit{value: msg.value}();
+            wrappedNativeToken.deposit{ value: msg.value }();
             // Else, it is a normal ERC20. In this case pull the token from the caller as per normal.
             // Note: this includes the case where the L2 caller has WETH (already wrapped ETH) and wants to bridge them.
             // In this case the msg.value will be set to 0, indicating a "normal" ERC20 bridging action.
@@ -1301,7 +1317,7 @@ abstract contract SpokePool is
         // transaction then the user is sending ETH. In this case, the ETH should be deposited to wrappedNativeToken.
         if (originToken == address(wrappedNativeToken) && msg.value > 0) {
             if (msg.value != amount) revert MsgValueDoesNotMatchInputAmount();
-            wrappedNativeToken.deposit{value: msg.value}();
+            wrappedNativeToken.deposit{ value: msg.value }();
             // Else, it is a normal ERC20. In this case pull the token from the user's wallet as per normal.
             // Note: this includes the case where the L2 user has WETH (already wrapped ETH) and wants to bridge them.
             // In this case the msg.value will be set to 0, indicating a "normal" ERC20 bridging action.
@@ -1431,11 +1447,11 @@ abstract contract SpokePool is
     // signers from signatures because some L2s might not support ecrecover. To be safe, consider always reverting
     // this function for L2s where ecrecover is different from how it works on Ethereum, otherwise there is the
     // potential to forge a signature from the depositor using a different private key than the original depositor's.
-    function _verifyDepositorSignature(address depositor, bytes32 ethSignedMessageHash, bytes memory depositorSignature)
-        internal
-        view
-        virtual
-    {
+    function _verifyDepositorSignature(
+        address depositor,
+        bytes32 ethSignedMessageHash,
+        bytes memory depositorSignature
+    ) internal view virtual {
         // Note:
         // - We don't need to worry about reentrancy from a contract deployed at the depositor address since the method
         //   `SignatureChecker.isValidSignatureNow` is a view method. Re-entrancy can happen, but it cannot affect state.
@@ -1483,7 +1499,11 @@ abstract contract SpokePool is
 
     // @param relayer: relayer who is actually credited as filling this deposit. Can be different from
     // exclusiveRelayer if passed exclusivityDeadline or if slow fill.
-    function _fillRelayV3(V3RelayExecutionParams memory relayExecution, address relayer, bool isSlowFill) internal {
+    function _fillRelayV3(
+        V3RelayExecutionParams memory relayExecution,
+        address relayer,
+        bool isSlowFill
+    ) internal {
         console2.log("_fillRelay");
         V3RelayData memory relayData = relayExecution.relay;
 
@@ -1570,7 +1590,10 @@ abstract contract SpokePool is
         bytes memory updatedMessage = relayExecution.updatedMessage;
         if (updatedMessage.length > 0 && recipientToSend.isContract()) {
             AcrossMessageHandler(recipientToSend).handleV3AcrossMessage(
-                outputToken, amountToSend, msg.sender, updatedMessage
+                outputToken,
+                amountToSend,
+                msg.sender,
+                updatedMessage
             );
         }
     }
