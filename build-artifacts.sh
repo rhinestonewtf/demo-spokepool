@@ -11,7 +11,7 @@ fi
 CONTRACT_NAME=$1
 
 mkdir -p ./artifacts/$CONTRACT_NAME
-forge build $CONTRACT_NAME
+forge build contracts/$CONTRACT_NAME.sol
 cp ./out/$CONTRACT_NAME.sol/* ./artifacts/$CONTRACT_NAME/.
-forge verify-contract --show-standard-json-input $(cast address-zero) $CONTRACT_NAME > ./artifacts/$CONTRACT_NAME/verify.json
+forge verify-contract --show-standard-json-input $(cast address-zero) ./contracts/$CONTRACT_NAME.sol:$CONTRACT_NAME > ./artifacts/$CONTRACT_NAME/verify.json
 
